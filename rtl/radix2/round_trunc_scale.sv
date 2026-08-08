@@ -59,8 +59,11 @@ module round_trunc_scale #(
             logic signed [INPUT_INTEGER_WIDTH - 1 : 0] res_int_part;
             assign res_int_part = $signed(res_rounded[OUTPUT_WIDTH-1 -: OUTPUT_INTEGER_WIDTH]);
             
+            logic signed [INPUT_WIDTH - 1 : 0] a_scaled;
+            assign a_scaled = a >>> RADIX_OUT_SCALE;
+
             always_comb begin
-                if (res_int_part != {a >>> RADIX_OUT_SCALE}[INPUT_WIDTH-1 -: INPUT_INTEGER_WIDTH] + res_part_changed) begin
+                if (res_int_part != a_scaled[INPUT_WIDTH-1 -: INPUT_INTEGER_WIDTH] + res_part_changed) begin
                     res = a[INPUT_WIDTH-1] ? FIXEDPOINT_MIN : FIXEDPOINT_MAX;
                 end 
                 else begin

@@ -27,16 +27,12 @@ module dpram #(
         if (wr_en_0) begin
             mem[wr_addr_0] <= wr_data_0;
         end
-        else begin
-            rd_data_0 <= mem[rd_addr_0];
-        end
-
         if (wr_en_1) begin
             mem[wr_addr_1] <= wr_data_1;
         end
-        else begin
-            rd_data_1 <= mem[rd_addr_1];
-        end
+        
+        rd_data_0 <= mem[rd_addr_0];
+        rd_data_1 <= mem[rd_addr_1];
     end
 
 endmodule

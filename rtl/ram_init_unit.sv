@@ -29,7 +29,7 @@ module ram_init_unit #(
     // Bit reverse
     genvar i;
     generate
-        for(i = 0; i < N; i = i + 1) begin
+        for(i = 0; i < $clog2(N); i = i + 1) begin : bit_reverse
             assign bit_reverse_counter[i] = counter[$clog2(N)-i-1];
         end
     endgenerate

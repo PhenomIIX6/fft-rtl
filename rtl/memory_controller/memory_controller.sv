@@ -179,6 +179,8 @@ module memory_controller #(
         ram0_wr_en_1 = 'b0; 
         pp_ram0_rd_data_0 = 'b0;
         pp_ram0_rd_data_1 = 'b0;
+        pp_ram1_rd_data_0 = 'b0;
+        pp_ram1_rd_data_1 = 'b0;
         ram1_rd_addr_0 = 'b0; 
         ram1_rd_addr_1 = 'b0; 
         ram1_wr_addr_0 = 'b0; 
@@ -187,7 +189,8 @@ module memory_controller #(
         ram1_wr_en_0 = 'b0; 
         ram1_wr_data_1 = 'b0; 
         ram1_wr_en_1 = 'b0; 
-        
+        export_ram_rd_data = 'b0;
+    
         if (ram_init_en) begin
             if (init_target) begin
                 ram1_wr_data_0 = init_ram_wr_data;

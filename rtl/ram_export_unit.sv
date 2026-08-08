@@ -24,6 +24,8 @@ module ram_export_unit #(
     logic wr;
     logic rd;
     logic last;
+    logic empty;
+    logic full;
 
     fifo #(
         .DEPTH(2),
