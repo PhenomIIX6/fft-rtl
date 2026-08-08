@@ -1,0 +1,8 @@
+.vscode
+libdpi.so
+work 
+transcript 
+vsim.wlf 
+vsim_stacktrace.vstf
+twiddle_factors.bin
+tw_file_gen.out

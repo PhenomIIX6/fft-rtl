@@ -1,0 +1,15 @@
+./rtl/common/pipeline_register.sv
+./rtl/common/fifo.sv
+./rtl/common/dpram.sv
+./rtl/twiddle_factors/rom.sv
+./rtl/twiddle_factors/twiddle_factors_rom.sv
+./rtl/radix2/round_trunc_scale.sv
+./rtl/radix2/complex_multiplier.sv
+./rtl/radix2/radix2_core.sv
+./rtl/radix2/radix2_top.sv
+./rtl/control_unit.sv
+./rtl/memory_controller/ping_pong.sv
+./rtl/memory_controller/memory_controller.sv
+./rtl/ram_init_unit.sv
+./rtl/ram_export_unit.sv
+./rtl/fft.sv
