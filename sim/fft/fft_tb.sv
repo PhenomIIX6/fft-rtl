@@ -125,16 +125,16 @@ module fft_tb;
                     expected_old_right_addr = subarray * (r * 2) + offset + r;
                     expected_tw_factor_addr = offset * (N / (2*r));
 
-                    if (expected_old_left_addr != dut.radix2_inst.stage1.ram0_rd_addr_0) begin
-                        $display("[%t] FAIL! Expected old_left_addr == %d, but get %d.", $time, expected_old_left_addr, dut.radix2_inst.stage1.ram0_rd_addr_0);
+                    if (expected_old_left_addr != dut.radix2_inst.stage1.old_left_addr) begin
+                        $display("[%t] FAIL! Expected old_left_addr == %d, but get %d.", $time, expected_old_left_addr, dut.radix2_inst.stage1.old_left_addr);
                     end
 
-                    if (expected_old_right_addr != dut.radix2_inst.stage1.ram0_rd_addr_1) begin
-                        $display("[%t] FAIL! Expected old_right_addr == %d, but get %d.", $time, expected_old_right_addr, dut.radix2_inst.stage1.ram0_rd_addr_1);
+                    if (expected_old_right_addr != dut.radix2_inst.stage1.old_right_addr) begin
+                        $display("[%t] FAIL! Expected old_right_addr == %d, but get %d.", $time, expected_old_right_addr, dut.radix2_inst.stage1.old_right_addr);
                     end
 
-                    if (expected_tw_factor_addr != dut.radix2_inst.stage1.tw_factor_addr_0) begin
-                        $display("[%t] FAIL! Expected tw_factor_addr == %d, but get %d.", $time, expected_tw_factor_addr, dut.radix2_inst.stage1.tw_factor_addr_0);
+                    if (expected_tw_factor_addr != dut.radix2_inst.stage1.tw_factor_addr) begin
+                        $display("[%t] FAIL! Expected tw_factor_addr == %d, but get %d.", $time, expected_tw_factor_addr, dut.radix2_inst.stage1.tw_factor_addr);
                     end
                     
                     @(posedge clk);

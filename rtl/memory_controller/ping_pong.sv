@@ -9,13 +9,13 @@ module ping_pong #(
     input  logic arst_n,
 
     // RADIX-2 <-> ping-pong intf
-    input  logic [ADDRSIZE-1:0] radix_ram0_rd_addr_0,
-    input  logic [ADDRSIZE-1:0] radix_ram0_rd_addr_1,
+    input  logic [ADDRSIZE-1:0] radix_ram0_addr_0,
+    input  logic [ADDRSIZE-1:0] radix_ram0_addr_1,
     output logic [SAMPLE_WIDTH-1:0] radix_ram0_rd_data_0,
     output logic [SAMPLE_WIDTH-1:0] radix_ram0_rd_data_1,
 
-    input  logic [ADDRSIZE-1:0] radix_ram1_wr_addr_0,
-    input  logic [ADDRSIZE-1:0] radix_ram1_wr_addr_1,
+    input  logic [ADDRSIZE-1:0] radix_ram1_addr_0,
+    input  logic [ADDRSIZE-1:0] radix_ram1_addr_1,
     input  logic [SAMPLE_WIDTH-1:0] radix_ram1_wr_data_0,
     input  logic [SAMPLE_WIDTH-1:0] radix_ram1_wr_data_1,
     input  logic radix_ram1_wr_en_0,
@@ -27,12 +27,9 @@ module ping_pong #(
     input  logic stage2_ram_req,
 
     // ping-pong <-> ram0 intf
-    output  logic [ADDRSIZE-1:0] ram0_rd_addr_0,
-    output  logic [ADDRSIZE-1:0] ram0_rd_addr_1,
+    output  logic [ADDRSIZE-1:0] ram0_addr_0,
+    output  logic [ADDRSIZE-1:0] ram0_addr_1,
 
-    output  logic [ADDRSIZE-1:0] ram0_wr_addr_0,
-    output  logic [ADDRSIZE-1:0] ram0_wr_addr_1,
-    
     output  logic [SAMPLE_WIDTH-1:0]    ram0_wr_data_0,
     output  logic                       ram0_wr_en_0,
     output  logic [SAMPLE_WIDTH-1:0]    ram0_wr_data_1,
@@ -42,12 +39,9 @@ module ping_pong #(
     input logic [SAMPLE_WIDTH-1:0]      ram0_rd_data_1,
 
     // ping-pong <-> ram1 intf
-    output  logic [ADDRSIZE-1:0] ram1_rd_addr_0,
-    output  logic [ADDRSIZE-1:0] ram1_rd_addr_1,
+    output  logic [ADDRSIZE-1:0] ram1_addr_0,
+    output  logic [ADDRSIZE-1:0] ram1_addr_1,
 
-    output  logic [ADDRSIZE-1:0] ram1_wr_addr_0,
-    output  logic [ADDRSIZE-1:0] ram1_wr_addr_1,
-    
     output  logic [SAMPLE_WIDTH-1:0]    ram1_wr_data_0,
     output  logic                       ram1_wr_en_0,
     output  logic [SAMPLE_WIDTH-1:0]    ram1_wr_data_1,
@@ -64,18 +58,14 @@ module ping_pong #(
     always_comb begin
         radix_ram0_rd_data_0 = 'b0;
         radix_ram0_rd_data_1 = 'b0;
-        ram0_rd_addr_0 = 'b0;
-        ram0_rd_addr_1 = 'b0;
-        ram0_wr_addr_0 = 'b0;
-        ram0_wr_addr_1 = 'b0;
+        ram0_addr_0 = 'b0;
+        ram0_addr_1 = 'b0;
         ram0_wr_data_0 = 'b0;
         ram0_wr_en_0 = 'b0;
         ram0_wr_data_1 = 'b0;
         ram0_wr_en_1 = 'b0;
-        ram1_rd_addr_0 = 'b0;
-        ram1_rd_addr_1 = 'b0;
-        ram1_wr_addr_0 = 'b0;
-        ram1_wr_addr_1 = 'b0;
+        ram1_addr_0 = 'b0;
+        ram1_addr_1 = 'b0;
         ram1_wr_data_0 = 'b0;
         ram1_wr_en_0 = 'b0;
         ram1_wr_data_1 = 'b0;
@@ -86,11 +76,11 @@ module ping_pong #(
                 radix_ram0_rd_data_0 = ram0_rd_data_0;
                 radix_ram0_rd_data_1 = ram0_rd_data_1;
                 
-                ram0_rd_addr_0 = radix_ram0_rd_addr_0;
-                ram0_rd_addr_1 = radix_ram0_rd_addr_1;
+                ram0_addr_0 = radix_ram0_addr_0;
+                ram0_addr_1 = radix_ram0_addr_1;
                 
-                ram1_wr_addr_0 = radix_ram1_wr_addr_0;
-                ram1_wr_addr_1 = radix_ram1_wr_addr_1;
+                ram1_addr_0 = radix_ram1_addr_0;
+                ram1_addr_1 = radix_ram1_addr_1;
                 
                 ram1_wr_data_0 = radix_ram1_wr_data_0;
                 ram1_wr_en_0 = radix_ram1_wr_en_0;
@@ -101,11 +91,11 @@ module ping_pong #(
                 radix_ram0_rd_data_0 = ram1_rd_data_0;
                 radix_ram0_rd_data_1 = ram1_rd_data_1;
                 
-                ram1_rd_addr_0 = radix_ram0_rd_addr_0;
-                ram1_rd_addr_1 = radix_ram0_rd_addr_1;
+                ram1_addr_0 = radix_ram0_addr_0;
+                ram1_addr_1 = radix_ram0_addr_1;
                 
-                ram0_wr_addr_0 = radix_ram1_wr_addr_0;
-                ram0_wr_addr_1 = radix_ram1_wr_addr_1;
+                ram0_addr_0 = radix_ram1_addr_0;
+                ram0_addr_1 = radix_ram1_addr_1;
                 
                 ram0_wr_data_0 = radix_ram1_wr_data_0;
                 ram0_wr_en_0 = radix_ram1_wr_en_0;
@@ -115,8 +105,8 @@ module ping_pong #(
         end
         else begin
             if (!stage2_ram_req) begin
-                ram0_wr_addr_0 = radix_ram1_wr_addr_0;
-                ram0_wr_addr_1 = radix_ram1_wr_addr_1;
+                ram0_addr_0 = radix_ram1_addr_0;
+                ram0_addr_1 = radix_ram1_addr_1;
                 
                 ram0_wr_data_0 = radix_ram1_wr_data_0;
                 ram0_wr_en_0 = radix_ram1_wr_en_0;
@@ -127,8 +117,8 @@ module ping_pong #(
                 radix_ram0_rd_data_1 = ram1_rd_data_1;
             end
             else begin
-                ram1_wr_addr_0 = radix_ram1_wr_addr_0;
-                ram1_wr_addr_1 = radix_ram1_wr_addr_1;
+                ram1_addr_0 = radix_ram1_addr_0;
+                ram1_addr_1 = radix_ram1_addr_1;
                 
                 ram1_wr_data_0 = radix_ram1_wr_data_0;
                 ram1_wr_en_0 = radix_ram1_wr_en_0;

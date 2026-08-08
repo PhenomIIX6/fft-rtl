@@ -15,13 +15,13 @@ module memory_controller #(
     input logic ram_export_en,
 
     // RADIX <-> memory_controller intf
-    input  logic [ADDRSIZE-1:0] radix_ram0_rd_addr_0,
-    input  logic [ADDRSIZE-1:0] radix_ram0_rd_addr_1,
+    input  logic [ADDRSIZE-1:0] radix_ram0_addr_0,
+    input  logic [ADDRSIZE-1:0] radix_ram0_addr_1,
     output logic [SAMPLE_WIDTH-1:0] radix_ram0_rd_data_0,
     output logic [SAMPLE_WIDTH-1:0] radix_ram0_rd_data_1,
 
-    input  logic [ADDRSIZE-1:0] radix_ram1_wr_addr_0,
-    input  logic [ADDRSIZE-1:0] radix_ram1_wr_addr_1,
+    input  logic [ADDRSIZE-1:0] radix_ram1_addr_0,
+    input  logic [ADDRSIZE-1:0] radix_ram1_addr_1,
     input  logic [SAMPLE_WIDTH-1:0] radix_ram1_wr_data_0,
     input  logic [SAMPLE_WIDTH-1:0] radix_ram1_wr_data_1,
     input  logic radix_ram1_wr_en_0,
@@ -42,12 +42,9 @@ module memory_controller #(
     output logic [SAMPLE_WIDTH-1:0] export_ram_rd_data,
 
     // memory_controller <-> ram0 intf
-    output  logic [ADDRSIZE-1:0] ram0_rd_addr_0,
-    output  logic [ADDRSIZE-1:0] ram0_rd_addr_1,
+    output  logic [ADDRSIZE-1:0] ram0_addr_0,
+    output  logic [ADDRSIZE-1:0] ram0_addr_1,
 
-    output  logic [ADDRSIZE-1:0] ram0_wr_addr_0,
-    output  logic [ADDRSIZE-1:0] ram0_wr_addr_1,
-    
     output  logic [SAMPLE_WIDTH-1:0]    ram0_wr_data_0,
     output  logic                       ram0_wr_en_0,
     output  logic [SAMPLE_WIDTH-1:0]    ram0_wr_data_1,
@@ -57,12 +54,9 @@ module memory_controller #(
     input   logic [SAMPLE_WIDTH-1:0]    ram0_rd_data_1,
 
     // memory_controller <-> ram1 intf
-    output  logic [ADDRSIZE-1:0] ram1_rd_addr_0,
-    output  logic [ADDRSIZE-1:0] ram1_rd_addr_1,
+    output  logic [ADDRSIZE-1:0] ram1_addr_0,
+    output  logic [ADDRSIZE-1:0] ram1_addr_1,
 
-    output  logic [ADDRSIZE-1:0] ram1_wr_addr_0,
-    output  logic [ADDRSIZE-1:0] ram1_wr_addr_1,
-    
     output  logic [SAMPLE_WIDTH-1:0]    ram1_wr_data_0,
     output  logic                       ram1_wr_en_0,
     output  logic [SAMPLE_WIDTH-1:0]    ram1_wr_data_1,
@@ -78,34 +72,16 @@ module memory_controller #(
     assign export_target = !init_target;
 
     // PING-PONG 
-    logic [ADDRSIZE-1:0] pp_ram0_rd_addr_0;
-    logic [ADDRSIZE-1:0] pp_ram0_rd_addr_1;
+    logic [ADDRSIZE-1:0] pp_ram0_addr_0, pp_ram0_addr_1;
+    logic [SAMPLE_WIDTH-1:0] pp_ram0_wr_data_0, pp_ram0_wr_data_1;
+    logic pp_ram0_wr_en_0, pp_ram0_wr_en_1;
+    logic [SAMPLE_WIDTH-1:0] pp_ram0_rd_data_0, pp_ram0_rd_data_1;
 
-    logic [ADDRSIZE-1:0] pp_ram0_wr_addr_0;
-    logic [ADDRSIZE-1:0] pp_ram0_wr_addr_1;
-    
-    logic [SAMPLE_WIDTH-1:0]    pp_ram0_wr_data_0;
-    logic                       pp_ram0_wr_en_0;
-    logic [SAMPLE_WIDTH-1:0]    pp_ram0_wr_data_1;
-    logic                       pp_ram0_wr_en_1;
 
-    logic [SAMPLE_WIDTH-1:0]    pp_ram0_rd_data_0;
-    logic [SAMPLE_WIDTH-1:0]    pp_ram0_rd_data_1;
-
-    logic [ADDRSIZE-1:0] pp_ram1_rd_addr_0;
-    logic [ADDRSIZE-1:0] pp_ram1_rd_addr_1;
-
-    logic [ADDRSIZE-1:0] pp_ram1_wr_addr_0;
-    logic [ADDRSIZE-1:0] pp_ram1_wr_addr_1;
-    
-    logic [SAMPLE_WIDTH-1:0]    pp_ram1_wr_data_0;
-    logic                       pp_ram1_wr_en_0;
-    logic [SAMPLE_WIDTH-1:0]    pp_ram1_wr_data_1;
-    logic                       pp_ram1_wr_en_1;
-
-    logic [SAMPLE_WIDTH-1:0]      pp_ram1_rd_data_0;
-    logic [SAMPLE_WIDTH-1:0]      pp_ram1_rd_data_1;
-
+    logic [ADDRSIZE-1:0] pp_ram1_addr_0, pp_ram1_addr_1;
+    logic [SAMPLE_WIDTH-1:0] pp_ram1_wr_data_0, pp_ram1_wr_data_1;
+    logic pp_ram1_wr_en_0, pp_ram1_wr_en_1;
+    logic [SAMPLE_WIDTH-1:0] pp_ram1_rd_data_0, pp_ram1_rd_data_1;
 
     logic pp_stage1_ram_req, pp_stage2_ram_req;
     
@@ -120,13 +96,13 @@ module memory_controller #(
         .arst_n(arst_n),
         
         // RADIX-2 <-> ping-pong intf
-        .radix_ram0_rd_addr_0(radix_ram0_rd_addr_0),
-        .radix_ram0_rd_addr_1(radix_ram0_rd_addr_1),
+        .radix_ram0_addr_0(radix_ram0_addr_0),
+        .radix_ram0_addr_1(radix_ram0_addr_1),
         .radix_ram0_rd_data_0(radix_ram0_rd_data_0),
         .radix_ram0_rd_data_1(radix_ram0_rd_data_1),
 
-        .radix_ram1_wr_addr_0(radix_ram1_wr_addr_0),
-        .radix_ram1_wr_addr_1(radix_ram1_wr_addr_1),
+        .radix_ram1_addr_0(radix_ram1_addr_0),
+        .radix_ram1_addr_1(radix_ram1_addr_1),
         .radix_ram1_wr_data_0(radix_ram1_wr_data_0),
         .radix_ram1_wr_data_1(radix_ram1_wr_data_1),
         .radix_ram1_wr_en_0(radix_ram1_wr_en_0),
@@ -138,11 +114,8 @@ module memory_controller #(
         .stage2_ram_req(pp_stage2_ram_req),
 
         // ping-pong <-> ram0 intf
-        .ram0_rd_addr_0(pp_ram0_rd_addr_0),
-        .ram0_rd_addr_1(pp_ram0_rd_addr_1),
-
-        .ram0_wr_addr_0(pp_ram0_wr_addr_0),
-        .ram0_wr_addr_1(pp_ram0_wr_addr_1),
+        .ram0_addr_0(pp_ram0_addr_0),
+        .ram0_addr_1(pp_ram0_addr_1),
         
         .ram0_wr_data_0(pp_ram0_wr_data_0),
         .ram0_wr_en_0(pp_ram0_wr_en_0),
@@ -153,11 +126,8 @@ module memory_controller #(
         .ram0_rd_data_1(pp_ram0_rd_data_1),
 
         // ping-pong <-> ram1 intf
-        .ram1_rd_addr_0(pp_ram1_rd_addr_0),
-        .ram1_rd_addr_1(pp_ram1_rd_addr_1),
-
-        .ram1_wr_addr_0(pp_ram1_wr_addr_0),
-        .ram1_wr_addr_1(pp_ram1_wr_addr_1),
+        .ram1_addr_0(pp_ram1_addr_0),
+        .ram1_addr_1(pp_ram1_addr_1),
         
         .ram1_wr_data_0(pp_ram1_wr_data_0),
         .ram1_wr_en_0(pp_ram1_wr_en_0),
@@ -169,10 +139,8 @@ module memory_controller #(
     );
 
     always_comb begin
-        ram0_rd_addr_0 = 'b0; 
-        ram0_rd_addr_1 = 'b0; 
-        ram0_wr_addr_0 = 'b0; 
-        ram0_wr_addr_1 = 'b0; 
+        ram0_addr_0 = 'b0; 
+        ram0_addr_1 = 'b0; 
         ram0_wr_data_0 = 'b0; 
         ram0_wr_en_0 = 'b0; 
         ram0_wr_data_1 = 'b0; 
@@ -181,10 +149,8 @@ module memory_controller #(
         pp_ram0_rd_data_1 = 'b0;
         pp_ram1_rd_data_0 = 'b0;
         pp_ram1_rd_data_1 = 'b0;
-        ram1_rd_addr_0 = 'b0; 
-        ram1_rd_addr_1 = 'b0; 
-        ram1_wr_addr_0 = 'b0; 
-        ram1_wr_addr_1 = 'b0; 
+        ram1_addr_0 = 'b0; 
+        ram1_addr_1 = 'b0; 
         ram1_wr_data_0 = 'b0; 
         ram1_wr_en_0 = 'b0; 
         ram1_wr_data_1 = 'b0; 
@@ -194,23 +160,20 @@ module memory_controller #(
         if (ram_init_en) begin
             if (init_target) begin
                 ram1_wr_data_0 = init_ram_wr_data;
-                ram1_wr_addr_0 = init_ram_wr_addr;
+                ram1_addr_0 = init_ram_wr_addr;
                 ram1_wr_en_0 = init_ram_wr_en;
             end
             else begin 
                 ram0_wr_data_0 = init_ram_wr_data;
-                ram0_wr_addr_0 = init_ram_wr_addr;
+                ram0_addr_0 = init_ram_wr_addr;
                 ram0_wr_en_0 = init_ram_wr_en;
             end
         end
 
         if (radix_en || radix_stall) begin
             // RAM 0
-            ram0_rd_addr_0 = pp_ram0_rd_addr_0; 
-            ram0_rd_addr_1 = pp_ram0_rd_addr_1; 
-
-            ram0_wr_addr_0 = pp_ram0_wr_addr_0; 
-            ram0_wr_addr_1 = pp_ram0_wr_addr_1; 
+            ram0_addr_0 = pp_ram0_addr_0; 
+            ram0_addr_1 = pp_ram0_addr_1; 
             
             ram0_wr_data_0 = pp_ram0_wr_data_0; 
             ram0_wr_en_0 = pp_ram0_wr_en_0; 
@@ -221,11 +184,8 @@ module memory_controller #(
             pp_ram0_rd_data_1 = ram0_rd_data_1;
 
             // RAM 1
-            ram1_rd_addr_0 = pp_ram1_rd_addr_0; 
-            ram1_rd_addr_1 = pp_ram1_rd_addr_1; 
-
-            ram1_wr_addr_0 = pp_ram1_wr_addr_0; 
-            ram1_wr_addr_1 = pp_ram1_wr_addr_1; 
+            ram1_addr_0 = pp_ram1_addr_0; 
+            ram1_addr_1 = pp_ram1_addr_1; 
             
             ram1_wr_data_0 = pp_ram1_wr_data_0; 
             ram1_wr_en_0 = pp_ram1_wr_en_0; 
@@ -238,11 +198,11 @@ module memory_controller #(
 
         if (ram_export_en) begin
             if (export_target) begin
-                ram1_rd_addr_0 = export_ram_rd_addr;
+                ram1_addr_0 = export_ram_rd_addr;
                 export_ram_rd_data = ram1_rd_data_0;
             end
             else begin
-                ram0_rd_addr_0 = export_ram_rd_addr;
+                ram0_addr_0 = export_ram_rd_addr;
                 export_ram_rd_data = ram0_rd_data_0;
             end
         end

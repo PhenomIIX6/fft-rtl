@@ -15,13 +15,13 @@ module radix2_top #(
     input  logic en,
     output logic done,
 
-    output logic [$clog2(N)-1:0] ram0_rd_addr_0,
-    output logic [$clog2(N)-1:0] ram0_rd_addr_1,
+    output logic [$clog2(N)-1:0] ram0_addr_0,
+    output logic [$clog2(N)-1:0] ram0_addr_1,
     input  logic [SAMPLE_WIDTH-1:0] ram0_rd_data_0,
     input  logic [SAMPLE_WIDTH-1:0] ram0_rd_data_1,
 
-    output logic [$clog2(N)-1:0] ram1_wr_addr_0,
-    output logic [$clog2(N)-1:0] ram1_wr_addr_1,
+    output logic [$clog2(N)-1:0] ram1_addr_0,
+    output logic [$clog2(N)-1:0] ram1_addr_1,
     output logic [SAMPLE_WIDTH-1:0] ram1_wr_data_0,
     output logic [SAMPLE_WIDTH-1:0] ram1_wr_data_1,
     output logic ram1_wr_en_0,
@@ -30,12 +30,10 @@ module radix2_top #(
     output logic stage1_ram_req,
     output logic stage2_ram_req
 );
-
-    // TODO: Rename stage1_t and stage2_t fields
     typedef struct packed {
-        logic [$clog2(N)-1:0] tw_factor_addr_0;
-        logic [$clog2(N)-1:0] ram0_rd_addr_0;
-        logic [$clog2(N)-1:0] ram0_rd_addr_1;
+        logic [$clog2(N)-1:0] tw_factor_addr;
+        logic [$clog2(N)-1:0] old_left_addr;
+        logic [$clog2(N)-1:0] old_right_addr;
     } stage1_t;
 
     typedef struct {
@@ -45,12 +43,8 @@ module radix2_top #(
         logic [SAMPLE_WIDTH-1:0] old_right;
         logic [SAMPLE_WIDTH-1:0] new_left;
         logic [SAMPLE_WIDTH-1:0] new_right;
-        logic [$clog2(N)-1:0] ram1_wr_addr_0;
-        logic [$clog2(N)-1:0] ram1_wr_addr_1;
-        logic ram1_wr_en_0;
-        logic ram1_wr_en_1;
-        logic [SAMPLE_WIDTH-1:0] ram1_wr_data_0;
-        logic [SAMPLE_WIDTH-1:0] ram1_wr_data_1;
+        logic [$clog2(N)-1:0] new_left_addr;
+        logic [$clog2(N)-1:0] new_right_addr;
     } stage2_t;
 
     typedef struct packed {
@@ -97,9 +91,9 @@ module radix2_top #(
 
     assign stage1_common.valid = en && !stage2_common.last;
     
-    assign stage1.tw_factor_addr_0 = stage1_common.offset << ($clog2(N) - (stage1_common.r + 1));
-    assign stage1.ram0_rd_addr_0 = (stage1_common.subarray << (stage1_common.r+1)) + stage1_common.offset;
-    assign stage1.ram0_rd_addr_1 = (stage1_common.subarray << (stage1_common.r+1)) + stage1_common.offset + (1 << stage1_common.r);
+    assign stage1.tw_factor_addr = stage1_common.offset << ($clog2(N) - (stage1_common.r + 1));
+    assign stage1.old_left_addr = (stage1_common.subarray << (stage1_common.r+1)) + stage1_common.offset;
+    assign stage1.old_right_addr = (stage1_common.subarray << (stage1_common.r+1)) + stage1_common.offset + (1 << stage1_common.r);
 
     twiddle_factors_rom #(
         .N(N),
@@ -108,7 +102,7 @@ module radix2_top #(
     ) tw_factors_rom_inst_0 (
         .clk(clk),
         .arst_n(arst_n),
-        .addr(stage1.tw_factor_addr_0),
+        .addr(stage1.tw_factor_addr),
         .data_out(stage2.tw_factor_0)
     );
 
@@ -122,7 +116,6 @@ module radix2_top #(
     );
 
     // STAGE 2
-    
     assign stage2.tw_factor_1 = {
         ~stage2.tw_factor_0[SAMPLE_WIDTH-1:WIDTH] + 1'b1,
         ~stage2.tw_factor_0[WIDTH-1:0] + 1'b1
@@ -143,37 +136,31 @@ module radix2_top #(
         .new_right(stage2.new_right)
     );
 
-    always_comb begin
-        stage2.ram1_wr_addr_0 = ( stage2_common.subarray << (stage2_common.r+1) ) + stage2_common.offset;
-        stage2.ram1_wr_addr_1 = ( stage2_common.subarray << (stage2_common.r+1) ) + stage2_common.offset + (1 << stage2_common.r);
-        stage2.ram1_wr_data_0 = stage2.new_left;
-        stage2.ram1_wr_data_1 = stage2.new_right;
-        stage2.ram1_wr_en_0 = 1'b1;
-        stage2.ram1_wr_en_1 = 1'b1;
-    end
+    assign stage2.new_left_addr = ( stage2_common.subarray << (stage2_common.r+1) ) + stage2_common.offset;
+    assign stage2.new_right_addr = ( stage2_common.subarray << (stage2_common.r+1) ) + stage2_common.offset + (1 << stage2_common.r);
     
     always_comb begin
-        ram0_rd_addr_0 = 'b0;
-        ram0_rd_addr_1 = 'b0;
-        ram1_wr_addr_0 = 'b0;
-        ram1_wr_addr_1 = 'b0;
+        ram0_addr_0 = 'b0;
+        ram0_addr_1 = 'b0;
+        ram1_addr_0 = 'b0;
+        ram1_addr_1 = 'b0;
         ram1_wr_data_0 = 'b0;
         ram1_wr_data_1 = 'b0;
         ram1_wr_en_0 = 'b0;
         ram1_wr_en_1 = 'b0;
         
         if (stage1_common.valid) begin
-            ram0_rd_addr_0 = stage1.ram0_rd_addr_0;
-            ram0_rd_addr_1 = stage1.ram0_rd_addr_1;
+            ram0_addr_0 = stage1.old_left_addr;
+            ram0_addr_1 = stage1.old_right_addr;
         end
 
         if (stage2_common.valid) begin
-            ram1_wr_addr_0 = stage2.ram1_wr_addr_0;
-            ram1_wr_addr_1 = stage2.ram1_wr_addr_1;
-            ram1_wr_data_0 = stage2.ram1_wr_data_0;
-            ram1_wr_data_1 = stage2.ram1_wr_data_1;
-            ram1_wr_en_0 = stage2.ram1_wr_en_0;
-            ram1_wr_en_1 = stage2.ram1_wr_en_1;
+            ram1_addr_0 = stage2.new_left_addr;
+            ram1_addr_1 = stage2.new_right_addr;
+            ram1_wr_data_0 = stage2.new_left;
+            ram1_wr_data_1 = stage2.new_right;
+            ram1_wr_en_0 = 1'b1;
+            ram1_wr_en_1 = 1'b1;
         end
 
         stage2.old_left = ram0_rd_data_0;

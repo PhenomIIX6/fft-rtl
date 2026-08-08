@@ -54,8 +54,7 @@ module fft #(
     );
 
     // RAM 0
-    logic [ADDRSIZE-1:0] ram0_rd_addr_0, ram0_rd_addr_1;
-    logic [ADDRSIZE-1:0] ram0_wr_addr_0, ram0_wr_addr_1;
+    logic [ADDRSIZE-1:0] ram0_addr_0, ram0_addr_1;
     logic [SAMPLE_WIDTH-1:0] ram0_rd_data_0, ram0_rd_data_1;
     logic [SAMPLE_WIDTH-1:0] ram0_wr_data_0, ram0_wr_data_1;
     logic ram0_wr_en_0, ram0_wr_en_1;
@@ -65,10 +64,8 @@ module fft #(
         .DEPTH(N)
     ) dpram_inst_0 (
         .clk(clk),
-        .rd_addr_0(ram0_rd_addr_0),
-        .rd_addr_1(ram0_rd_addr_1),
-        .wr_addr_0(ram0_wr_addr_0),
-        .wr_addr_1(ram0_wr_addr_1),
+        .addr_0(ram0_addr_0),
+        .addr_1(ram0_addr_1),
         .wr_data_0(ram0_wr_data_0),
         .wr_en_0(ram0_wr_en_0),
         .wr_data_1(ram0_wr_data_1),
@@ -78,8 +75,7 @@ module fft #(
     );
 
     // RAM 1
-    logic [ADDRSIZE-1:0] ram1_rd_addr_0, ram1_rd_addr_1;
-    logic [ADDRSIZE-1:0] ram1_wr_addr_0, ram1_wr_addr_1;
+    logic [ADDRSIZE-1:0] ram1_addr_0, ram1_addr_1;
     logic [SAMPLE_WIDTH-1:0] ram1_rd_data_0, ram1_rd_data_1;
     logic [SAMPLE_WIDTH-1:0] ram1_wr_data_0, ram1_wr_data_1;
     logic ram1_wr_en_0, ram1_wr_en_1;
@@ -89,10 +85,8 @@ module fft #(
         .DEPTH(N)
     ) dpram_inst_1 (
         .clk(clk),
-        .rd_addr_0(ram1_rd_addr_0),
-        .rd_addr_1(ram1_rd_addr_1),
-        .wr_addr_0(ram1_wr_addr_0),
-        .wr_addr_1(ram1_wr_addr_1),
+        .addr_0(ram1_addr_0),
+        .addr_1(ram1_addr_1),
         .wr_data_0(ram1_wr_data_0),
         .wr_en_0(ram1_wr_en_0),
         .wr_data_1(ram1_wr_data_1),
@@ -129,16 +123,11 @@ module fft #(
     );
 
     // RADIX
-    logic [ADDRSIZE-1:0] radix_ram0_rd_addr_0;
-    logic [ADDRSIZE-1:0] radix_ram0_rd_addr_1;
-    logic [SAMPLE_WIDTH-1:0] radix_ram0_rd_data_0;
-    logic [SAMPLE_WIDTH-1:0] radix_ram0_rd_data_1;
-    logic [ADDRSIZE-1:0] radix_ram1_wr_addr_0;
-    logic [ADDRSIZE-1:0] radix_ram1_wr_addr_1;
-    logic [SAMPLE_WIDTH-1:0] radix_ram1_wr_data_0;
-    logic [SAMPLE_WIDTH-1:0] radix_ram1_wr_data_1;
-    logic radix_ram1_wr_en_0;
-    logic radix_ram1_wr_en_1;
+    logic [ADDRSIZE-1:0] radix_ram0_addr_0, radix_ram1_addr_0;
+    logic [ADDRSIZE-1:0] radix_ram0_addr_1, radix_ram1_addr_1;
+    logic [SAMPLE_WIDTH-1:0] radix_ram0_rd_data_0, radix_ram0_rd_data_1;
+    logic [SAMPLE_WIDTH-1:0] radix_ram1_wr_data_0, radix_ram1_wr_data_1;
+    logic radix_ram1_wr_en_0, radix_ram1_wr_en_1;
 
     logic stage1_ram_req;
     logic stage2_ram_req;
@@ -157,13 +146,13 @@ module fft #(
         .en(radix_en),
         .done(radix_done),
 
-        .ram0_rd_addr_0(radix_ram0_rd_addr_0),
-        .ram0_rd_addr_1(radix_ram0_rd_addr_1),
+        .ram0_addr_0(radix_ram0_addr_0),
+        .ram0_addr_1(radix_ram0_addr_1),
         .ram0_rd_data_0(radix_ram0_rd_data_0),
         .ram0_rd_data_1(radix_ram0_rd_data_1),
 
-        .ram1_wr_addr_0(radix_ram1_wr_addr_0),
-        .ram1_wr_addr_1(radix_ram1_wr_addr_1),
+        .ram1_addr_0(radix_ram1_addr_0),
+        .ram1_addr_1(radix_ram1_addr_1),
         .ram1_wr_data_0(radix_ram1_wr_data_0),
         .ram1_wr_data_1(radix_ram1_wr_data_1),
         .ram1_wr_en_0(radix_ram1_wr_en_0),
@@ -212,13 +201,13 @@ module fft #(
         .ram_export_en(ram_export_en),
 
         // RADIX <-> memory_controller intf
-        .radix_ram0_rd_addr_0(radix_ram0_rd_addr_0),
-        .radix_ram0_rd_addr_1(radix_ram0_rd_addr_1),
+        .radix_ram0_addr_0(radix_ram0_addr_0),
+        .radix_ram0_addr_1(radix_ram0_addr_1),
         .radix_ram0_rd_data_0(radix_ram0_rd_data_0),
         .radix_ram0_rd_data_1(radix_ram0_rd_data_1),
 
-        .radix_ram1_wr_addr_0(radix_ram1_wr_addr_0),
-        .radix_ram1_wr_addr_1(radix_ram1_wr_addr_1),
+        .radix_ram1_addr_0(radix_ram1_addr_0),
+        .radix_ram1_addr_1(radix_ram1_addr_1),
         .radix_ram1_wr_data_0(radix_ram1_wr_data_0),
         .radix_ram1_wr_data_1(radix_ram1_wr_data_1),
         .radix_ram1_wr_en_0(radix_ram1_wr_en_0),
@@ -239,12 +228,9 @@ module fft #(
         .export_ram_rd_data(export_ram_rd_data),
 
         // memory_controller <-> ram0 intf
-        .ram0_rd_addr_0(ram0_rd_addr_0),
-        .ram0_rd_addr_1(ram0_rd_addr_1),
+        .ram0_addr_0(ram0_addr_0),
+        .ram0_addr_1(ram0_addr_1),
 
-        .ram0_wr_addr_0(ram0_wr_addr_0),
-        .ram0_wr_addr_1(ram0_wr_addr_1),
-    
         .ram0_wr_data_0(ram0_wr_data_0),
         .ram0_wr_en_0(ram0_wr_en_0),
         .ram0_wr_data_1(ram0_wr_data_1),
@@ -254,12 +240,9 @@ module fft #(
         .ram0_rd_data_1(ram0_rd_data_1),
 
         // memory_controller <-> ram1 intf
-        .ram1_rd_addr_0(ram1_rd_addr_0),
-        .ram1_rd_addr_1(ram1_rd_addr_1),
+        .ram1_addr_0(ram1_addr_0),
+        .ram1_addr_1(ram1_addr_1),
 
-        .ram1_wr_addr_0(ram1_wr_addr_0),
-        .ram1_wr_addr_1(ram1_wr_addr_1),
-    
         .ram1_wr_data_0(ram1_wr_data_0),
         .ram1_wr_en_0(ram1_wr_en_0),
         .ram1_wr_data_1(ram1_wr_data_1),
