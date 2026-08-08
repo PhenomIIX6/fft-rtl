@@ -2,8 +2,8 @@ module ping_pong #(
     parameter N = 512,
     parameter WIDTH = 16,
 
-    localparam ADDRSIZE = $clog2(N),
-    localparam SAMPLE_WIDTH = 2*WIDTH
+    parameter ADDRSIZE = $clog2(N),
+    parameter SAMPLE_WIDTH = 2*WIDTH
 ) (
     input  logic clk,
     input  logic arst_n,

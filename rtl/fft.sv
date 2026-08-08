@@ -9,8 +9,8 @@ module fft #(
     parameter RADIX_OUT_SCALE = 1, 
     parameter SATURATION = 1,
 
-    localparam SAMPLE_WIDTH = 2*WIDTH,
-    localparam ADDRSIZE = $clog2(N)
+    parameter SAMPLE_WIDTH = 2*WIDTH,
+    parameter ADDRSIZE = $clog2(N)
 ) (
     input  logic clk,
     input  logic arst_n,

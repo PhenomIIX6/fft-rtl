@@ -2,8 +2,8 @@ module fifo #(
     parameter WIDTH = 32,
     parameter DEPTH = 32,
 
-    localparam ADDRSIZE = $clog2(DEPTH),
-    localparam CNTR_WIDTH = $clog2(DEPTH)+1
+    parameter ADDRSIZE = $clog2(DEPTH),
+    parameter CNTR_WIDTH = $clog2(DEPTH)+1
 ) (
     input  logic clk,
     input  logic arst_n,

@@ -9,9 +9,9 @@ module round_trunc_scale #(
     parameter SATURATION = 1,
     parameter RADIX_OUT_SCALE = 1,
 
-    localparam INPUT_FRAC_WIDTH = INPUT_WIDTH - INPUT_INTEGER_WIDTH,
-    localparam OUTPUT_FRAC_WIDTH = OUTPUT_WIDTH - OUTPUT_INTEGER_WIDTH,
-    localparam SHIFT_AMOUNT = INPUT_FRAC_WIDTH - OUTPUT_FRAC_WIDTH + RADIX_OUT_SCALE
+    parameter INPUT_FRAC_WIDTH = INPUT_WIDTH - INPUT_INTEGER_WIDTH,
+    parameter OUTPUT_FRAC_WIDTH = OUTPUT_WIDTH - OUTPUT_INTEGER_WIDTH,
+    parameter SHIFT_AMOUNT = INPUT_FRAC_WIDTH - OUTPUT_FRAC_WIDTH + RADIX_OUT_SCALE
 ) (
     input  logic signed [INPUT_WIDTH-1:0] a,
     output logic signed [OUTPUT_WIDTH-1:0] res 

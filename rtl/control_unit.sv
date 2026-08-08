@@ -2,7 +2,7 @@ module control_unit #(
     parameter N = 512,
     parameter WIDTH = 16,
     
-    localparam SAMPLE_WIDTH = 2*WIDTH
+    parameter SAMPLE_WIDTH = 2*WIDTH
 ) (
     input logic clk,
     input logic arst_n,

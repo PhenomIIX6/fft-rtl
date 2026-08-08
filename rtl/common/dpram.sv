@@ -2,7 +2,7 @@ module dpram #(
     parameter WIDTH = 32,
     parameter DEPTH = 32,
 
-    localparam ADDRSIZE = $clog2(DEPTH)
+    parameter ADDRSIZE = $clog2(DEPTH)
 ) (
     input  logic clk,
 

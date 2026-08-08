@@ -7,7 +7,7 @@ module radix2_top #(
     parameter RADIX_OUT_SCALE = 1,
     parameter SATURATION = 1,
 
-    localparam SAMPLE_WIDTH = 2*WIDTH
+    parameter SAMPLE_WIDTH = 2*WIDTH
 ) (
     input  logic clk,
     input  logic arst_n,

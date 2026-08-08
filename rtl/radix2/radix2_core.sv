@@ -5,8 +5,8 @@ module radix2_core #(
     parameter RADIX_OUT_SCALE = 1,
     parameter SATURATION = 1,
 
-    localparam FRAC_WIDTH = WIDTH - INTEGER_WIDTH,
-    localparam SAMPLE_WIDTH = 2*WIDTH
+    parameter FRAC_WIDTH = WIDTH - INTEGER_WIDTH,
+    parameter SAMPLE_WIDTH = 2*WIDTH
 ) (
     input  logic [SAMPLE_WIDTH-1:0] old_left,
     input  logic [SAMPLE_WIDTH-1:0] old_right,

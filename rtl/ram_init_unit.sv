@@ -3,7 +3,7 @@ module ram_init_unit #(
     parameter WIDTH = 16,
     // parameter SCALE_IN = 1,
     
-    localparam SAMPLE_WIDTH = 2*WIDTH 
+    parameter SAMPLE_WIDTH = 2*WIDTH 
 ) (
     input  logic clk,
     input  logic arst_n,

@@ -3,7 +3,7 @@ module twiddle_factors_rom #(
     parameter WIDTH = 16,
     parameter INIT_FILE = "twiddle_factors.bin",
     
-    localparam SAMPLE_WIDTH = 2*WIDTH
+    parameter SAMPLE_WIDTH = 2*WIDTH
 ) (
     input logic clk,
     input logic arst_n,

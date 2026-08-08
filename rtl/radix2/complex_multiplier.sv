@@ -2,7 +2,7 @@ module complex_multiplier #(
     parameter WIDTH = 16,
     parameter INTEGER_WIDTH = 2,
 
-    localparam SAMPLE_WIDTH = 2*WIDTH
+    parameter SAMPLE_WIDTH = 2*WIDTH
 ) (
     input logic [SAMPLE_WIDTH-1:0] z0,
     input logic [SAMPLE_WIDTH-1:0] z1,
