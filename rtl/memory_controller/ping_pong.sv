@@ -23,8 +23,8 @@ module ping_pong #(
 
     output logic radix_stall,
 
-    input  logic stage1_ram_req,
-    input  logic stage2_ram_req,
+    input  logic stage_read_ram_req,
+    input  logic stage_write_ram_req,
 
     // ping-pong <-> ram0 intf
     output  logic [ADDRSIZE-1:0] ram0_addr_0,
@@ -51,9 +51,7 @@ module ping_pong #(
     input logic [SAMPLE_WIDTH-1:0]      ram1_rd_data_1
 
 );
-    logic radix_stall_r;
-
-    assign radix_stall = (stage1_ram_req == stage2_ram_req) && !radix_stall_r;
+    assign radix_stall = (stage_read_ram_req == stage_write_ram_req);
 
     always_comb begin
         radix_ram0_rd_data_0 = 'b0;
@@ -72,7 +70,7 @@ module ping_pong #(
         ram1_wr_en_1 = 'b0;
         
         if (!radix_stall) begin
-            if (!stage1_ram_req) begin
+            if (!stage_read_ram_req) begin
                 radix_ram0_rd_data_0 = ram0_rd_data_0;
                 radix_ram0_rd_data_1 = ram0_rd_data_1;
                 
@@ -104,7 +102,7 @@ module ping_pong #(
             end
         end
         else begin
-            if (!stage2_ram_req) begin
+            if (!stage_write_ram_req) begin
                 ram0_addr_0 = radix_ram1_addr_0;
                 ram0_addr_1 = radix_ram1_addr_1;
                 
@@ -128,15 +126,6 @@ module ping_pong #(
                 radix_ram0_rd_data_0 = ram0_rd_data_0;
                 radix_ram0_rd_data_1 = ram0_rd_data_1;
             end
-        end
-    end
-
-    always_ff @(posedge clk or negedge arst_n) begin
-        if (!arst_n) begin
-            radix_stall_r <= 'b0;
-        end
-        else begin
-            radix_stall_r <= radix_stall;
         end
     end
 endmodule

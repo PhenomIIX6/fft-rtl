@@ -29,8 +29,8 @@ module memory_controller #(
 
     output logic radix_stall,
 
-    input  logic stage1_ram_req,
-    input  logic stage2_ram_req,
+    input  logic stage_read_ram_req,
+    input  logic stage_write_ram_req,
 
     // RAM INIT UNIT <-> memory_controller intf
     input logic [SAMPLE_WIDTH-1:0] init_ram_wr_data,
@@ -83,10 +83,10 @@ module memory_controller #(
     logic pp_ram1_wr_en_0, pp_ram1_wr_en_1;
     logic [SAMPLE_WIDTH-1:0] pp_ram1_rd_data_0, pp_ram1_rd_data_1;
 
-    logic pp_stage1_ram_req, pp_stage2_ram_req;
+    logic pp_stage_read_ram_req, pp_stage_write_ram_req;
     
-    assign pp_stage1_ram_req = init_target ? !stage1_ram_req : stage1_ram_req;
-    assign pp_stage2_ram_req = init_target ? !stage2_ram_req : stage2_ram_req;
+    assign pp_stage_read_ram_req = init_target ? !stage_read_ram_req : stage_read_ram_req;
+    assign pp_stage_write_ram_req = init_target ? !stage_write_ram_req : stage_write_ram_req;
 
     ping_pong #(
         .N(N),
@@ -110,8 +110,8 @@ module memory_controller #(
 
         .radix_stall(radix_stall),
 
-        .stage1_ram_req(pp_stage1_ram_req),
-        .stage2_ram_req(pp_stage2_ram_req),
+        .stage_read_ram_req(pp_stage_read_ram_req),
+        .stage_write_ram_req(pp_stage_write_ram_req),
 
         // ping-pong <-> ram0 intf
         .ram0_addr_0(pp_ram0_addr_0),

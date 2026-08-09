@@ -129,8 +129,8 @@ module fft #(
     logic [SAMPLE_WIDTH-1:0] radix_ram1_wr_data_0, radix_ram1_wr_data_1;
     logic radix_ram1_wr_en_0, radix_ram1_wr_en_1;
 
-    logic stage1_ram_req;
-    logic stage2_ram_req;
+    logic stage_read_ram_req;
+    logic stage_write_ram_req;
     
     radix2_top #(
         .N(N),
@@ -158,8 +158,8 @@ module fft #(
         .ram1_wr_en_0(radix_ram1_wr_en_0),
         .ram1_wr_en_1(radix_ram1_wr_en_1),
 
-        .stage1_ram_req(stage1_ram_req),
-        .stage2_ram_req(stage2_ram_req)
+        .stage_read_ram_req(stage_read_ram_req),
+        .stage_write_ram_req(stage_write_ram_req)
     );
 
     // RAM EXPORT UNIT
@@ -215,8 +215,8 @@ module fft #(
 
         .radix_stall(radix_stall),
 
-        .stage1_ram_req(stage1_ram_req),
-        .stage2_ram_req(stage2_ram_req),
+        .stage_read_ram_req(stage_read_ram_req),
+        .stage_write_ram_req(stage_write_ram_req),
 
         // RAM INIT UNIT <-> memory_controller intf
         .init_ram_wr_data(init_ram_wr_data),

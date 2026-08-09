@@ -27,8 +27,8 @@ module radix2_top #(
     output logic ram1_wr_en_0,
     output logic ram1_wr_en_1,
 
-    output logic stage1_ram_req,
-    output logic stage2_ram_req
+    output logic stage_read_ram_req,
+    output logic stage_write_ram_req
 );
     typedef struct packed {
         logic [$clog2(N)-1:0] tw_factor_addr;
@@ -48,6 +48,13 @@ module radix2_top #(
     } stage2_t;
 
     typedef struct packed {
+        logic [SAMPLE_WIDTH-1:0] new_left;
+        logic [SAMPLE_WIDTH-1:0] new_right;
+        logic [$clog2(N)-1:0] new_left_addr;
+        logic [$clog2(N)-1:0] new_right_addr; 
+    } stage3_t;
+
+    typedef struct packed {
         logic [$clog2(N)-1:0] offset;
         logic [$clog2(N)-1:0] r;
         logic [$clog2(N)-1:0] subarray;
@@ -57,7 +64,8 @@ module radix2_top #(
 
     stage1_t stage1;
     stage2_t stage2;
-    common_stage_t stage1_common, stage2_common;
+    stage3_t stage3;
+    common_stage_t stage1_common, stage2_common, stage3_common;
     
     // STAGE 1 - READ TWIDDLE FACTORS AND old_left, old_right
     always_ff @(posedge clk or negedge arst_n) begin
@@ -115,7 +123,7 @@ module radix2_top #(
         .q(stage2_common)
     );
 
-    // STAGE 2
+    // STAGE 2 - COMPUTE
     assign stage2.tw_factor_1 = {
         ~stage2.tw_factor_0[SAMPLE_WIDTH-1:WIDTH] + 1'b1,
         ~stage2.tw_factor_0[WIDTH-1:0] + 1'b1
@@ -138,7 +146,40 @@ module radix2_top #(
 
     assign stage2.new_left_addr = ( stage2_common.subarray << (stage2_common.r+1) ) + stage2_common.offset;
     assign stage2.new_right_addr = ( stage2_common.subarray << (stage2_common.r+1) ) + stage2_common.offset + (1 << stage2_common.r);
+
+    // STAGE 3 - WRITE BACK
+    pipeline_register #(
+        .WIDTH($bits(common_stage_t))
+    ) stage2_to_stage3_c (
+        .clk(clk),
+        .arst_n(arst_n),
+        .d(stage2_common),
+        .q(stage3_common)
+    );
     
+    pipeline_register #(
+        .WIDTH($bits(stage3_t))
+    ) stage2_to_stage3_u (
+        .clk(clk),
+        .arst_n(arst_n),
+        .d(
+            {
+                stage2.new_left,
+                stage2.new_right,
+                stage2.new_right_addr,
+                stage2.new_left_addr
+            }
+        ),
+        .q(
+            {
+                stage3.new_left,
+                stage3.new_right,
+                stage3.new_right_addr,
+                stage3.new_left_addr
+            }
+        )
+    );
+
     always_comb begin
         ram0_addr_0 = 'b0;
         ram0_addr_1 = 'b0;
@@ -154,11 +195,11 @@ module radix2_top #(
             ram0_addr_1 = stage1.old_right_addr;
         end
 
-        if (stage2_common.valid) begin
-            ram1_addr_0 = stage2.new_left_addr;
-            ram1_addr_1 = stage2.new_right_addr;
-            ram1_wr_data_0 = stage2.new_left;
-            ram1_wr_data_1 = stage2.new_right;
+        if (stage3_common.valid) begin
+            ram1_addr_0 = stage3.new_left_addr;
+            ram1_addr_1 = stage3.new_right_addr;
+            ram1_wr_data_0 = stage3.new_left;
+            ram1_wr_data_1 = stage3.new_right;
             ram1_wr_en_0 = 1'b1;
             ram1_wr_en_1 = 1'b1;
         end
@@ -167,15 +208,15 @@ module radix2_top #(
         stage2.old_right = ram0_rd_data_1;
     end
 
-    assign stage1_ram_req = stage1_common.r[0];
-    assign stage2_ram_req = !stage2_common.r[0];
+    assign stage_read_ram_req = stage1_common.r[0];
+    assign stage_write_ram_req = !stage3_common.r[0];
 
     always_ff @(posedge clk or negedge arst_n) begin
         if (!arst_n) begin
             done <= 1'b0;
         end
         else begin
-            if (stage2_common.valid && stage2_common.last) begin
+            if (stage3_common.valid && stage3_common.last) begin
                 done <= 1'b1;
             end
             else begin
