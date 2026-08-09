@@ -5,11 +5,16 @@ module radix2_core #(
     parameter RADIX_OUT_SCALE = 1,
     parameter SATURATION = 1,
 
+    parameter CONTEXT_WIDTH = 1,
+
     parameter FRAC_WIDTH = WIDTH - INTEGER_WIDTH,
     parameter SAMPLE_WIDTH = 2*WIDTH
 ) (
     input  logic clk,
     input  logic arst_n, 
+
+    input  logic [CONTEXT_WIDTH-1:0] context_in,
+    output logic [CONTEXT_WIDTH-1:0] context_out,
 
     input  logic [SAMPLE_WIDTH-1:0] old_left,
     input  logic [SAMPLE_WIDTH-1:0] old_right,
@@ -92,6 +97,15 @@ module radix2_core #(
         .arst_n(arst_n),
         .d(stage1.old_left),
         .q(stage2.old_left)
+    );
+
+    pipeline_register #(
+        .WIDTH(CONTEXT_WIDTH)
+    ) stage1_to_stage2_c (
+        .clk(clk),
+        .arst_n(arst_n),
+        .d(context_in),
+        .q(context_out)
     );
 
     // STAGE 2 - Get new_left and new_right
