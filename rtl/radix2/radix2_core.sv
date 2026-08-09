@@ -57,7 +57,7 @@ module radix2_core #(
         logic signed [EXTENDED_WIDTH-1:0] new_right_full_im;
 
         logic signed [EXTENDED_WIDTH-1:0] old_left_extended_re;
-        logic signed [EXTENDED_WIDTH-1:0] old_left_extended_im;
+        logic signed [EXTENDED_WIDTH-1:0] old_left_extended_im;        
     } stage2_t;
 
     stage1_t stage1;
@@ -70,9 +70,15 @@ module radix2_core #(
     assign stage1.old_right = old_right;  
 
     complex_multiplier_pipe #(
-        .WIDTH(WIDTH)
+        .WIDTH(WIDTH),
+        .CONTEXT_WIDTH(CONTEXT_WIDTH + $bits(stage1.old_left))
     ) complex_multiplier_inst_0 (
         .clk(clk),
+        .arst_n(arst_n),
+
+        .context_in({context_in, stage1.old_left}),
+        .context_out({context_out, stage2.old_left}),
+
         .z0(stage1.tw_factor_0),
         .z1(stage1.old_right),
         .re(stage2.new_left_product_re),
@@ -80,32 +86,19 @@ module radix2_core #(
     );
 
     complex_multiplier_pipe #(
-        .WIDTH(WIDTH)
+        .WIDTH(WIDTH),
+        .CONTEXT_WIDTH(0)
     ) complex_multiplier_inst_1 (
         .clk(clk),
+        .arst_n(arst_n),
+
+        .context_in(),
+        .context_out(),
+
         .z0(stage1.tw_factor_1),
         .z1(stage1.old_right),
         .re(stage2.new_right_product_re),
         .im(stage2.new_right_product_im)
-    );
-
-    // STAGE 1 TO STAGE 2 PIPELINE REGISTER
-    pipeline_register #(
-        .WIDTH(SAMPLE_WIDTH)
-    ) stage1_to_stage2_u (
-        .clk(clk),
-        .arst_n(arst_n),
-        .d(stage1.old_left),
-        .q(stage2.old_left)
-    );
-
-    pipeline_register #(
-        .WIDTH(CONTEXT_WIDTH)
-    ) stage1_to_stage2_c (
-        .clk(clk),
-        .arst_n(arst_n),
-        .d(context_in),
-        .q(context_out)
     );
 
     // STAGE 2 - Get new_left and new_right
