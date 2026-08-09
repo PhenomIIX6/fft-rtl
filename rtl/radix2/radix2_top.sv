@@ -36,7 +36,7 @@ module radix2_top #(
         logic [$clog2(N)-1:0] old_right_addr;
     } stage1_t;
 
-    typedef struct {
+    typedef struct packed {
         logic [SAMPLE_WIDTH-1:0] tw_factor_0;
         logic [SAMPLE_WIDTH-1:0] tw_factor_1;
         logic [SAMPLE_WIDTH-1:0] old_left;
@@ -63,9 +63,9 @@ module radix2_top #(
     } common_stage_t;
 
     stage1_t stage1;
-    stage2_t stage2;
+    stage2_t stage2, stage2_1, stage2_2;
     stage3_t stage3;
-    common_stage_t stage1_common, stage2_common, stage3_common;
+    common_stage_t stage1_common, stage2_common, stage2_1_common, stage2_2_common, stage3_common;
     
     // STAGE 1 - READ TWIDDLE FACTORS AND old_left, old_right
     always_ff @(posedge clk or negedge arst_n) begin
@@ -136,16 +136,50 @@ module radix2_top #(
         .RADIX_OUT_SCALE(RADIX_OUT_SCALE),
         .SATURATION(SATURATION)
     ) radix2_core_inst (
+        .clk(clk),
+        .arst_n(arst_n),
+
         .old_left(stage2.old_left),        
         .old_right(stage2.old_right),
         .tw_factor_0(stage2.tw_factor_0),
         .tw_factor_1(stage2.tw_factor_1),
-        .new_left(stage2.new_left),
-        .new_right(stage2.new_right)
+        .new_left(stage2_2.new_left),
+        .new_right(stage2_2.new_right)
     );
 
     assign stage2.new_left_addr = ( stage2_common.subarray << (stage2_common.r+1) ) + stage2_common.offset;
     assign stage2.new_right_addr = ( stage2_common.subarray << (stage2_common.r+1) ) + stage2_common.offset + (1 << stage2_common.r);
+
+    assign stage2_1_common = stage2_common;
+    assign stage2_1 = stage2;
+
+    pipeline_register #(
+        .WIDTH($bits(common_stage_t))
+    ) stage2_1_to_stage2_2_c (
+        .clk(clk),
+        .arst_n(arst_n),
+        .d(stage2_1_common),
+        .q(stage2_2_common)
+    );
+
+    pipeline_register #(
+        .WIDTH($clog2(N)+$clog2(N))
+    ) stage2_1_to_stage2_2_u (
+        .clk(clk),
+        .arst_n(arst_n),
+        .d(
+            {
+                stage2_1.new_left_addr, 
+                stage2_1.new_right_addr
+            }
+        ),
+        .q(
+            {
+                stage2_2.new_left_addr,
+                stage2_2.new_right_addr
+            }
+        )
+    );
 
     // STAGE 3 - WRITE BACK
     pipeline_register #(
@@ -153,7 +187,7 @@ module radix2_top #(
     ) stage2_to_stage3_c (
         .clk(clk),
         .arst_n(arst_n),
-        .d(stage2_common),
+        .d(stage2_2_common),
         .q(stage3_common)
     );
     
@@ -164,10 +198,10 @@ module radix2_top #(
         .arst_n(arst_n),
         .d(
             {
-                stage2.new_left,
-                stage2.new_right,
-                stage2.new_right_addr,
-                stage2.new_left_addr
+                stage2_2.new_left,
+                stage2_2.new_right,
+                stage2_2.new_right_addr,
+                stage2_2.new_left_addr
             }
         ),
         .q(

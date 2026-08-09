@@ -5,6 +5,7 @@
 ./rtl/twiddle_factors/twiddle_factors_rom.sv
 ./rtl/radix2/round_trunc_scale.sv
 ./rtl/radix2/complex_multiplier.sv
+./rtl/radix2/complex_multiplier_pipe.sv
 ./rtl/radix2/radix2_core.sv
 ./rtl/radix2/radix2_top.sv
 ./rtl/control_unit.sv
