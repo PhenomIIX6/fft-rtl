@@ -24,7 +24,9 @@ module fft_tb;
         .N(N),
         .WIDTH(WIDTH),
         .INTEGER_WIDTH(INTEGER_WIDTH),
-        .ROUND(ROUND)
+        .ROUND(ROUND),
+        .RADIX_OUT_SCALE(RADIX_OUT_SCALE),
+        .SATURATION(SATURATION)
     ) dut (
         .clk(clk),
         .arst_n(arst_n),

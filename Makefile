@@ -4,8 +4,9 @@
 WIDTH ?= 16
 INTEGER_WIDTH ?= 2
 N ?= 512
-# TODO: Complete all params
-# TODO: Override params in questasim
+ROUND ?= 1
+SATURATION ?= 1
+RADIX_OUT_SCALE ?= 1
 # TODO: Help target
 
 # Twiddle factors generate
@@ -37,7 +38,7 @@ c_compile: libdpi.so
 prepare: $(TW_ROM_INITFILE)
 
 questa: c_compile prepare
-	vlog -work work -sv -f top.f
+	vlog +define+N=$(N) +define+WIDTH=$(WIDTH) +define+INTEGER_WIDTH=$(INTEGER_WIDTH) +define+INTEGER_WIDTH=$(INTEGER_WIDTH) +define+ROUND=$(ROUND) +define+SATURATION=$(SATURATION) +define+RADIX_OUT_SCALE=$(RADIX_OUT_SCALE) -work work -sv -f top.f
 	vsim -64 -voptargs=+acc -sv_lib libdpi $(SIM_TOP)
 
 clean:

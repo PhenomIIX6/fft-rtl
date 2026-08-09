@@ -1,12 +1,41 @@
 package params_package;
     parameter CLK_PERIOD = 20;
 
-    parameter N = 512;
-    parameter WIDTH = 16;
-    parameter INTEGER_WIDTH = 2;
-    parameter ROUND = 1;
-    parameter RADIX_OUT_SCALE = 1;
-    parameter SATURATION = 1;
+    `ifdef N
+        parameter N = `N;
+    `else
+        parameter N = 512;
+    `endif
+
+    `ifdef WIDTH
+        parameter WIDTH = `WIDTH;
+    `else
+        parameter WIDTH = 16;
+    `endif
+
+    `ifdef INTEGER_WIDTH
+        parameter INTEGER_WIDTH = `INTEGER_WIDTH;
+    `else
+        parameter INTEGER_WIDTH = 2;
+    `endif
+
+    `ifdef ROUND
+        parameter ROUND = `ROUND;
+    `else
+        parameter ROUND = 1;
+    `endif
+
+    `ifdef RADIX_OUT_SCALE
+        parameter RADIX_OUT_SCALE = `RADIX_OUT_SCALE;
+    `else
+        parameter RADIX_OUT_SCALE = 1;
+    `endif
+
+    `ifdef SATURATION
+        parameter SATURATION = `SATURATION;
+    `else
+        parameter SATURATION = 1;
+    `endif
 
     parameter FRAC_WIDTH = WIDTH - INTEGER_WIDTH;
     parameter INIT_FILE = "./twiddle_factors.bin";
