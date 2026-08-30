@@ -46,8 +46,8 @@ module twiddle_factors_rom_tb;
 
             @(posedge clk);
 
-            rom_re = fixedpoint_to_float(data_out[SAMPLE_WIDTH-1:WIDTH]);
-            rom_im = fixedpoint_to_float(data_out[WIDTH-1:0]);
+            rom_re = Fixedpoint#(WIDTH)::get_real(data_out[SAMPLE_WIDTH-1:WIDTH]);
+            rom_im = Fixedpoint#(WIDTH)::get_real(data_out[WIDTH-1:0]);
             get_tw(i, int'(N), complex);
             $display("%d %f %f %f %f", addr, complex.re, rom_re, complex.im, rom_im);
             // TODO: Check epsilon

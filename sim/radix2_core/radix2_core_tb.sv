@@ -88,12 +88,12 @@ module radix2_core_tb;
     endfunction
 
     function automatic logic saturate(ref real saturated);
-        if (saturated > fixedpoint_to_float(FIXEDPOINT_MAX)) begin
-            saturated = fixedpoint_to_float(FIXEDPOINT_MAX);
+        if (saturated > Fixedpoint#(WIDTH)::get_real(FIXEDPOINT_MAX)) begin
+            saturated = Fixedpoint#(WIDTH)::get_real(FIXEDPOINT_MAX);
             return 1'b1;
         end
-        else if (saturated < fixedpoint_to_float(FIXEDPOINT_MIN))begin
-            saturated = fixedpoint_to_float(FIXEDPOINT_MIN);
+        else if (saturated < Fixedpoint#(WIDTH)::get_real(FIXEDPOINT_MIN))begin
+            saturated = Fixedpoint#(WIDTH)::get_real(FIXEDPOINT_MIN);
             return 1'b1;
         end
         else begin
@@ -189,10 +189,10 @@ module radix2_core_tb;
             tw_factor_0_complex = vector_to_complex_t(tw_factor_0);
             tw_factor_1_complex = vector_to_complex_t(tw_factor_1);
 
-            new_left_received.re = fixedpoint_to_float(new_left[SAMPLE_WIDTH-1 -: WIDTH]);
-            new_left_received.im = fixedpoint_to_float(new_left[WIDTH-1:0]);
-            new_right_received.re = fixedpoint_to_float(new_right[SAMPLE_WIDTH-1 -: WIDTH]);
-            new_right_received.im = fixedpoint_to_float(new_right[WIDTH-1:0]);
+            new_left_received.re = Fixedpoint#(WIDTH)::get_real(new_left[SAMPLE_WIDTH-1 -: WIDTH]);
+            new_left_received.im = Fixedpoint#(WIDTH)::get_real(new_left[WIDTH-1:0]);
+            new_right_received.re = Fixedpoint#(WIDTH)::get_real(new_right[SAMPLE_WIDTH-1 -: WIDTH]);
+            new_right_received.im = Fixedpoint#(WIDTH)::get_real(new_right[WIDTH-1:0]);
             
             // $display("DEBUG: old_left.re=%f, tw_factor_0.re=%f", old_left_complex.re, tw_factor_0_complex.re);
             complex_mac(old_left_complex, tw_factor_0_complex, old_right_complex, new_left_expected);

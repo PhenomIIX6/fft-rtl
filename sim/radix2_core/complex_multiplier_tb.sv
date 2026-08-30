@@ -57,8 +57,8 @@ module complex_multiplier_tb;
             z1 = pkt.z1;
             @(posedge clk);
             
-            received.re = wide_fixedpoint_to_float(re_received);
-            received.im = wide_fixedpoint_to_float(im_received);
+            received.re = Fixedpoint#(2*WIDTH)::get_real(re_received);
+            received.im = Fixedpoint#(2*WIDTH)::get_real(im_received);
 
             z0_complex = vector_to_complex_t(z0);
             z1_complex = vector_to_complex_t(z1);
