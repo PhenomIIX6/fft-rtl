@@ -67,12 +67,10 @@ module fft_tb;
             return 1'b1;
         endfunction
 
-        // TODO: Use function instead task, transfer the logic of wait
-        task automatic set_point(ref logic [SAMPLE_WIDTH-1:0] point, ref logic tvalid, ref logic tready);
-            wait (tvalid && tready);
+        function automatic set_point(logic [SAMPLE_WIDTH-1:0] point);
             complex_array_in[addr] = vector_to_complex_t(point);
             addr = addr + 1'b1;
-        endtask
+        endfunction 
 
         function automatic complex_array_t get_array();
             return complex_array_in;
@@ -151,7 +149,8 @@ module fft_tb;
             am.randomize();
             s_tdata = am.get_point();
             s_tvalid = am.get_tvalid();
-            am.set_point(s_tdata, s_tvalid, s_tready);
+            wait (s_tvalid && s_tready);
+            am.set_point(s_tdata);
             @(posedge clk);
         end
         s_tvalid = 1'b0;
