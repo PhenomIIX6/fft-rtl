@@ -167,7 +167,8 @@ module fft_tb;
             @(posedge clk);
         end
     endtask
-
+    
+    real err;
     initial begin
         AxisMaster am = new();
         AxisSlave as = new();
@@ -199,7 +200,11 @@ module fft_tb;
             $display("%f %f", (out[i].re - model_out[i].re)**2, (out[i].im - model_out[i].im)**2);
             $display("--------");
         end
-    end
 
+        foreach (model_out[i]) begin
+            err = (out[i].re-model_out[i].re)**2 + (out[i].im-model_out[i].im)**2;
+            if (err > 1e-4) $error("idx %0d err=%f", i, err);
+        end
+    end
 
 endmodule
